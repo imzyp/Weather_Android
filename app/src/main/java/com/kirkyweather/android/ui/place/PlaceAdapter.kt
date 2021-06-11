@@ -30,6 +30,7 @@ class PlaceAdapter(private val viewModel: PlaceViewModel, private val placeList:
                 putExtra("location_lng", place.location.lng)
                 putExtra("location_lat", place.location.lat)
                 putExtra("place_name", place.name)
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
             viewModel.savePlace(place)
             context.startActivity(intent)

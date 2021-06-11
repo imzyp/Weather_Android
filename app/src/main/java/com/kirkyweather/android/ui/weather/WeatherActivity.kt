@@ -1,5 +1,6 @@
 package com.kirkyweather.android.ui.weather
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -16,8 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.kirkyweather.android.R
 import com.kirkyweather.android.databinding.ActivityPlaceBinding
 import com.kirkyweather.android.databinding.ActivityWeatherBinding
+import com.kirkyweather.android.logic.model.Place
 import com.kirkyweather.android.logic.model.Weather
 import com.kirkyweather.android.logic.model.getSky
+import com.kirkyweather.android.ui.place.PlaceActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +37,20 @@ class WeatherActivity : AppCompatActivity() {
 
         binding = ActivityWeatherBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        // 菜单栏的功能
+        binding.placeName.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search_iem -> {
+                    val intent = Intent(this, PlaceActivity::class.java)
+                    intent.putExtra("clean", "true")
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
 
 
         if (viewModel.locationLng.isEmpty()) {
@@ -54,12 +71,25 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            binding.swipeRefresh.isRefreshing = false
         })
+
+        // 刷新设置
+        binding.swipeRefresh.setColorSchemeResources(R.color.colorSecondary)
+        binding.swipeRefresh.setOnRefreshListener {
+            refreshWeather()
+        }
 
         viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
     }
 
+    // 刷新数据
+    private fun refreshWeather() {
+        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+        binding.swipeRefresh.isRefreshing = true
+    }
 
+    // 展示数据
     private fun showWeatherInfo(weather: Weather) {
         binding.placeName.title = viewModel.placeName
         val realtime = weather.realtime
@@ -101,4 +131,7 @@ class WeatherActivity : AppCompatActivity() {
         binding.lifeIndex.carWashingText.text = lifeIndex.carWashing[0].desc
         binding.weatherLayout.visibility = View.VISIBLE
     }
+
+    // 刷新数据
+
 }
