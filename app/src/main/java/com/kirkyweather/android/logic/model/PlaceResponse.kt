@@ -2,12 +2,9 @@ package com.kirkyweather.android.logic.model
 
 import com.google.gson.annotations.SerializedName
 
-// 腾讯api服务
-data class PlaceResponse(val status: Int,
-                         @SerializedName("data") val places: List<Place>)
+data class PlaceResponse(val status: String, val places: List<Place>)
 
-data class Place(@SerializedName("title") val name: String,
-                 val address: String,
-                 val location: Location,)
+data class Place(val name: String, val location: Location,
+                 @SerializedName("formatted_address") val address: String)
 
 data class Location(val lng: String, val lat: String)
